@@ -1343,16 +1343,35 @@ with exp_col2:
         "Rapport structuré avec synthèse, analyses graphiques et recommandations stratégiques."
     )
     try:
-        pdf_bytes = generate_pdf_report(fdf, active_filters)
-        st.download_button(
-            "📄 Télécharger le rapport PDF",
-            data=pdf_bytes,
-            file_name="AirAnalytics_Rapport.pdf",
-            mime="application/pdf",
-            key="export_pdf",
-        )
-    except ImportError:
-        st.info("Pour activer le rapport PDF : `pip install reportlab kaleido`")
+        # Bouton export PDF
+try:
+    if st.button("📄 Télécharger le rapport PDF", key="export_pdf"):
+        try:
+            pdf_bytes = generate_pdf_report(df_filtered, active_filters)
+        except Exception:
+            # Erreur typique sur Streamlit Cloud (Kaleido / Chrome manquant)
+            st.error(
+                "La génération du rapport PDF avec graphiques n'est pas disponible sur "
+                "Streamlit Cloud (problème Kaleido / Google Chrome manquant). "
+                "Tu peux générer le PDF en local sur ton ordinateur."
+            )
+        else:
+            st.download_button(
+                "⬇️ Télécharger le rapport PDF",
+                data=pdf_bytes,
+                file_name="rapport_aero_analytics.pdf",
+                mime="application/pdf",
+            )
+except ImportError:
+    st.info(
+        "Pour activer la génération du rapport PDF en local, installe les dépendances : "
+        "`pip install reportlab kaleido`."
+    )
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+except ImportError:
+st.info("Pour activer le rapport PDF : `pip install reportlab kaleido`")
 st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
